@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortener-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: url-shortener-backend
+  template:
+    metadata:
+      labels:
+        app: url-shortener-backend
+    spec:
+      initContainers:
+        - name: migrate
+          image: url-shortener-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/app/url-shortener"]
+          env:
+            - name: RUST_LOG
+              value: info
+            - name: CONFIG_PATH
+              value: /app/config/docker.toml
+            - name: RUN_MIGRATIONS_ONLY
+              value: "true"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-password
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-user
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-name
+          volumeMounts:
+            - name: config
+              mountPath: /app/config/docker.toml
+              subPath: docker.toml
+      containers:
+        - name: backend
+          image: url-shortener-backend:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RUST_LOG
+              value: info
+            - name: LOG_FORMAT
+              value: json
+            - name: CONFIG_PATH
+              value: /app/config/docker.toml
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-password
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-user
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: url-shortener-secret
+                  key: db-name
+          ports:
+            - containerPort: 3100
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3100
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3100
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /app/config/docker.toml
+              subPath: docker.toml
+      volumes:
+        - name: config
+          configMap:
+            name: url-shortener-config

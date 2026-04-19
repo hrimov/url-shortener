@@ -1,0 +1,22 @@
+{
+  // Node-only tsconfig for tooling (vite.config, eslint.config, etc.).
+  // Kept simple on purpose to avoid newer TS options (target/lib) that
+  // some editors/TS servers don't understand.
+  "include": [
+    "vite.config.*",
+    "vitest.config.*",
+    "cypress.config.*",
+    "nightwatch.conf.*",
+    "playwright.config.*",
+    "eslint.config.*"
+  ],
+  "compilerOptions": {
+    "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "incremental": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"]
+  }
+}

@@ -1,0 +1,14 @@
+target/
+.git/
+.github/
+.gitignore
+.gitattributes
+.assets/
+.idea/
+client/
+k8s/
+justfile
+*.md
+*.toml
+!Cargo.toml
+!config/template.toml

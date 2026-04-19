@@ -1,0 +1,19 @@
+[application]
+host = "localhost"
+port = 3100
+log_level = "info"
+
+[database]
+host = "localhost"
+port = 5432
+user = "postgres"
+password = "postgres"
+database_name = "postgres"
+
+max_connections = 5
+connect_timeout_seconds = 10
+
+[cache]
+host = "localhost"
+port = 6379
+ttl_seconds = 3600

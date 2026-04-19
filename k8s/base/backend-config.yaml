@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: url-shortener-config
+data:
+  docker.toml: |
+    [application]
+    host = "0.0.0.0"
+    port = 3100
+    log_level = "info"
+
+    [database]
+    host = "postgres"
+    port = 5432
+    user = "placeholder"
+    password = "placeholder"
+    database_name = "placeholder"
+
+    max_connections = 5
+    connect_timeout_seconds = 5
+
+    [cache]
+    host = "redis"
+    port = 6379
+    ttl_seconds = 3600
